@@ -34,6 +34,9 @@
 		1FF377A420087C82004FD648 /* MessageKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF377A320087C82004FD648 /* MessageKitError.swift */; };
 		1FF377AA20087D78004FD648 /* MessagesViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF377A920087D78004FD648 /* MessagesViewController+Menu.swift */; };
 		1FF377AC20087DA2004FD648 /* MessagesViewController+Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FF377AB20087DA2004FD648 /* MessagesViewController+Keyboard.swift */; };
+		38AA6F3E20DAE8350080F67A /* TypingIndicatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AA6F3D20DAE8350080F67A /* TypingIndicatorCell.swift */; };
+		38AA6F4020DAE8440080F67A /* TypingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AA6F3F20DAE8440080F67A /* TypingIndicator.swift */; };
+		38AA6F4220DAE86B0080F67A /* Circle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AA6F4120DAE86B0080F67A /* Circle.swift */; };
 		38C57C791F9AE3E50043CC03 /* SeparatorLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C57C781F9AE3E50043CC03 /* SeparatorLine.swift */; };
 		38C57C7C1F9AE4890043CC03 /* InputStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38C57C7B1F9AE4870043CC03 /* InputStackView.swift */; };
 		88916B2D1CF0DF2F00469F91 /* MessageKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88916B221CF0DF2F00469F91 /* MessageKit.framework */; };
@@ -136,6 +139,9 @@
 		1FF377A320087C82004FD648 /* MessageKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKitError.swift; sourceTree = "<group>"; };
 		1FF377A920087D78004FD648 /* MessagesViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessagesViewController+Menu.swift"; sourceTree = "<group>"; };
 		1FF377AB20087DA2004FD648 /* MessagesViewController+Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessagesViewController+Keyboard.swift"; sourceTree = "<group>"; };
+		38AA6F3D20DAE8350080F67A /* TypingIndicatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypingIndicatorCell.swift; sourceTree = "<group>"; };
+		38AA6F3F20DAE8440080F67A /* TypingIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypingIndicator.swift; sourceTree = "<group>"; };
+		38AA6F4120DAE86B0080F67A /* Circle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Circle.swift; sourceTree = "<group>"; };
 		38C57C781F9AE3E50043CC03 /* SeparatorLine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeparatorLine.swift; sourceTree = "<group>"; };
 		38C57C7B1F9AE4870043CC03 /* InputStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputStackView.swift; sourceTree = "<group>"; };
 		88916B221CF0DF2F00469F91 /* MessageKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MessageKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -233,6 +239,7 @@
 				B7A03F7A1F866B85006AEF79 /* MessageCollectionViewCell.swift */,
 				1F6C040B206A2891007BDE44 /* MessageContentCell.swift */,
 				B7A03F361F866946006AEF79 /* TextMessageCell.swift */,
+				38AA6F3D20DAE8350080F67A /* TypingIndicatorCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -399,6 +406,7 @@
 				2EB618F01F84676A007FBA0E /* Cells */,
 				2EB618F11F846899007FBA0E /* Headers & Footers */,
 				B7A03F3E1F86694F006AEF79 /* AvatarView.swift */,
+				38AA6F4120DAE86B0080F67A /* Circle.swift */,
 				B7A03F411F86694F006AEF79 /* InputBarItem.swift */,
 				B7A03F401F86694F006AEF79 /* InputTextView.swift */,
 				38C57C7B1F9AE4870043CC03 /* InputStackView.swift */,
@@ -409,6 +417,7 @@
 				B7A03F451F86694F006AEF79 /* MessagesCollectionView.swift */,
 				B7A03F441F86694F006AEF79 /* PlayButtonView.swift */,
 				38C57C781F9AE3E50043CC03 /* SeparatorLine.swift */,
+				38AA6F3F20DAE8440080F67A /* TypingIndicator.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -615,10 +624,12 @@
 				B7A03F2E1F866895006AEF79 /* MessageKind.swift in Sources */,
 				B7A03F7B1F866B85006AEF79 /* MessageCollectionViewCell.swift in Sources */,
 				B7A03F6B1F8669EB006AEF79 /* UIColor+Extensions.swift in Sources */,
+				38AA6F4020DAE8440080F67A /* TypingIndicator.swift in Sources */,
 				B7A03F5E1F8669CA006AEF79 /* MessagesLayoutDelegate.swift in Sources */,
 				B7A03F261F866895006AEF79 /* MessageKitDateFormatter.swift in Sources */,
 				B7A03F6D1F8669EB006AEF79 /* Bundle+Extensions.swift in Sources */,
 				1FD589602064E08A004B5081 /* MediaItem.swift in Sources */,
+				38AA6F4220DAE86B0080F67A /* Circle.swift in Sources */,
 				B7A03F611F8669CA006AEF79 /* MessagesDataSource.swift in Sources */,
 				B7A03F6E1F8669EB006AEF79 /* NSAttributedString+Extensions.swift in Sources */,
 				B7A03F471F86694F006AEF79 /* MessageLabel.swift in Sources */,
@@ -636,6 +647,7 @@
 				0EF0888C206F7E83007F2F58 /* CellSizeCalculator.swift in Sources */,
 				1FE783A4206629A5007FA024 /* MediaMessageSizeCalculator.swift in Sources */,
 				B7A03F731F866A06006AEF79 /* MessageKit+Availability.swift in Sources */,
+				38AA6F3E20DAE8350080F67A /* TypingIndicatorCell.swift in Sources */,
 				1FE7839E20662835007FA024 /* MessageSizeCalculator.swift in Sources */,
 				1FE783A6206629C2007FA024 /* LocationMessageSizeCalculator.swift in Sources */,
 				B7A03F2D1F866895006AEF79 /* LabelAlignment.swift in Sources */,

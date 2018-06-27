@@ -66,6 +66,10 @@ internal struct MockMessage: MessageType {
         self.messageId = messageId
         self.sentDate = date
     }
+    
+    init(sender: Sender, messageId: String, date: Date) {
+        self.init(kind: .typing, sender: sender, messageId: messageId, date: date)
+    }
 
     init(text: String, sender: Sender, messageId: String, date: Date) {
         self.init(kind: .text(text), sender: sender, messageId: messageId, date: date)

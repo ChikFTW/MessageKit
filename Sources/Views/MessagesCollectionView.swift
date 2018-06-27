@@ -62,6 +62,7 @@ open class MessagesCollectionView: UICollectionView {
     // MARK: - Methods
     
     private func registerReusableViews() {
+        register(TypingIndicatorCell.self)
         register(TextMessageCell.self)
         register(MediaMessageCell.self)
         register(LocationMessageCell.self)
@@ -148,5 +149,5 @@ open class MessagesCollectionView: UICollectionView {
         }
         return viewType
     }
-
+    
 }

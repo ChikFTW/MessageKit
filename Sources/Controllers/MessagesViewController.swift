@@ -46,6 +46,8 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     ///
     /// The default value of this property is `false`.
     open var maintainPositionOnKeyboardFrameChanged: Bool = false
+    
+    public private(set) var showsTypingIndicator: Bool = false
 
     open override var canBecomeFirstResponder: Bool {
         return true
@@ -173,7 +175,7 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
         guard let messagesDataSource = messagesCollectionView.messagesDataSource else {
             fatalError(MessageKitError.nilMessagesDataSource)
         }
-
+        
         let message = messagesDataSource.messageForItem(at: indexPath, in: messagesCollectionView)
 
         switch message.kind {
@@ -188,6 +190,11 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
         case .location:
             let cell = messagesCollectionView.dequeueReusableCell(LocationMessageCell.self, for: indexPath)
             cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+            return cell
+        case .typing:
+            let cell = messagesCollectionView.dequeueReusableCell(TypingIndicatorCell.self, for: indexPath)
+            cell.configure(with: message, at: indexPath, and: messagesCollectionView)
+            cell.typingIndicator.startAnimating()
             return cell
         case .custom:
             fatalError(MessageKitError.customDataUnresolvedCell)
@@ -276,6 +283,13 @@ UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
         default:
             break
         }
+    }
+    
+    // MARK: - Typing Indicator
+    
+    open func setShowsTypingIndicator(_ newValue: Bool) {
+        showsTypingIndicator = newValue
+        messagesCollectionView.reloadData()
     }
 
     // MARK: - Helpers

@@ -82,28 +82,31 @@ internal class ConversationViewController: MessagesViewController {
     
     @objc func handleTyping() {
         
-        defer {
-            isTyping = !isTyping
-        }
+        defer { isTyping = !isTyping }
         
-        if isTyping {
-            
-            messageInputBar.topStackView.arrangedSubviews.first?.removeFromSuperview()
-            messageInputBar.topStackViewPadding = .zero
-            
-        } else {
-            
-            let label = UILabel()
-            label.text = "nathan.tannar is typing..."
-            label.font = UIFont.boldSystemFont(ofSize: 16)
-            messageInputBar.topStackView.addArrangedSubview(label)
-            messageInputBar.topStackViewPadding.top = 6
-            messageInputBar.topStackViewPadding.left = 12
-            
-            // The backgroundView doesn't include the topStackView. This is so things in the topStackView can have transparent backgrounds if you need it that way or another color all together
-            messageInputBar.backgroundColor = messageInputBar.backgroundView.backgroundColor
-            
-        }
+        let typingMessage = MockMessage(sender: SampleData.shared.dan, messageId: UUID().uuidString, date: Date())
+        messageList.append(typingMessage)
+        messagesCollectionView.insertSections([messageList.count - 1])
+        
+        // Slack style typing indicator
+//        if isTyping {
+//
+//            messageInputBar.topStackView.arrangedSubviews.first?.removeFromSuperview()
+//            messageInputBar.topStackViewPadding = .zero
+//
+//        } else {
+//
+//            let label = UILabel()
+//            label.text = "nathan.tannar is typing..."
+//            label.font = UIFont.boldSystemFont(ofSize: 16)
+//            messageInputBar.topStackView.addArrangedSubview(label)
+//            messageInputBar.topStackViewPadding.top = 6
+//            messageInputBar.topStackViewPadding.left = 12
+//
+//            // The backgroundView doesn't include the topStackView. This is so things in the topStackView can have transparent backgrounds if you need it that way or another color all together
+//            messageInputBar.backgroundColor = messageInputBar.backgroundView.backgroundColor
+//
+//        }
 
     }
     
