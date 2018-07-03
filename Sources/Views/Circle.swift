@@ -27,18 +27,7 @@ import UIKit
 /// A `UIView` subclass that maintains a mask to keep it fully circular
 open class Circle: UIView {
     
-    public convenience init(radius: CGFloat) {
-        self.init(frame: CGRect(origin: .zero, size: CGSize(width: radius, height: radius)))
-    }
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
+    /// Lays out subviews and applys a circular mask to the layer
     open override func layoutSubviews() {
         super.layoutSubviews()
         layer.mask = roundedMask(corners: .allCorners, radius: bounds.height / 2)

@@ -37,8 +37,28 @@ open class TypingIndicatorCell: MessageCollectionViewCell {
         return containerView
     }()
     
+    open var isPulseEnabled: Bool = true
+    
+    public private(set) var isAnimating: Bool = false
+    
+    private struct AnimationKeys {
+        static let pulse = "typingBubble.pulse"
+    }
+    
     /// The indicator used to display the typing animation.
     open let typingIndicator = TypingIndicator()
+    
+    open let cornerBubble: Circle = {
+        let view = Circle()
+        view.backgroundColor = UIColor(red: 230/255, green: 230/255, blue: 235/255, alpha: 1.0)
+        return view
+    }()
+    
+    open let tinyBubble: Circle = {
+        let view = Circle()
+        view.backgroundColor = UIColor(red: 230/255, green: 230/255, blue: 235/255, alpha: 1.0)
+        return view
+    }()
     
     // MARK: - Initialization
     
@@ -53,19 +73,15 @@ open class TypingIndicatorCell: MessageCollectionViewCell {
     }
     
     open func setupSubviews() {
+        contentView.addSubview(tinyBubble)
+        contentView.addSubview(cornerBubble)
+        contentView.addSubview(messageContainerView)
+        messageContainerView.addSubview(typingIndicator)
         contentView.addSubview(messageContainerView)
         messageContainerView.addSubview(typingIndicator)
     }
     
     // MARK: - Configuration
-    
-    open override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
-        super.apply(layoutAttributes)
-        guard let attributes = layoutAttributes as? MessagesCollectionViewLayoutAttributes else { return }
-        // Call this before other laying out other subviews
-        layoutMessageContainerView(with: attributes)
-        typingIndicator.frame = messageContainerView.bounds
-    }
     
     /// Used to configure the cell.
     ///
@@ -82,8 +98,15 @@ open class TypingIndicatorCell: MessageCollectionViewCell {
 //        let messageStyle = displayDelegate.messageStyle(for: message, at: indexPath, in: messagesCollectionView)
         
         messageContainerView.backgroundColor = messageColor
-//        messageContainerView.style = messageStyle
-        messageContainerView.style = .bubble
+//        switch messageStyle {
+//        case .bubble, .bubbleOutline(_):
+//            // Do Nothing
+//            break
+//        case .bubbleTail(_, _), .bubbleTailOutline(_, _, _), .custom(_), .none:
+//            cornerBubble.isHidden = true
+//            tinyBubble.isHidden = true
+//            messageContainerView.style = messageStyle
+//        }
     }
     
     /// Handle `ContentView`'s tap gesture, return false when `ContentView` doesn't needs to handle gesture
@@ -91,30 +114,72 @@ open class TypingIndicatorCell: MessageCollectionViewCell {
         return false
     }
     
-    // MARK: - Origin Calculations
+    // MARK: - Layout
     
-    /// Positions the cell's `MessageContainerView`.
-    /// - attributes: The `MessagesCollectionViewLayoutAttributes` for the cell.
-    open func layoutMessageContainerView(with attributes: MessagesCollectionViewLayoutAttributes) {
-        var origin: CGPoint = .zero
+    open override func layoutSubviews() {
+        super.layoutSubviews()
         
-        switch attributes.avatarPosition.vertical {
-        case .messageBottom:
-            origin.y = attributes.size.height - attributes.messageContainerPadding.bottom - attributes.messageBottomLabelSize.height - attributes.messageContainerSize.height - attributes.messageContainerPadding.top
-        default:
-            origin.y = attributes.cellTopLabelSize.height + attributes.messageTopLabelSize.height + attributes.messageContainerPadding.top
-        }
+        // To maintain the iMessage like bubble the width:height ratio of the frame
+        // must be close to 1.5
+        let ratio = bounds.width / bounds.height
+        let extraRightInset: CGFloat = bounds.width - 1.5/ratio*bounds.width
         
-        switch attributes.avatarPosition.horizontal {
-        case .cellLeading:
-            origin.x = attributes.messageContainerPadding.left
-        case .cellTrailing:
-            origin.x = attributes.frame.width - attributes.messageContainerSize.width - attributes.messageContainerPadding.right
-        case .natural:
-            fatalError(MessageKitError.avatarPositionUnresolved)
-        }
+        let tinyBubbleRadius: CGFloat = bounds.height / 6
+        tinyBubble.frame = CGRect(x: 0,
+                                  y: bounds.height - tinyBubbleRadius,
+                                  width: tinyBubbleRadius,
+                                  height: tinyBubbleRadius)
         
-        messageContainerView.frame = CGRect(origin: origin, size: attributes.messageContainerSize)
+        let cornerBubbleRadius = tinyBubbleRadius * 2
+        let offset: CGFloat = tinyBubbleRadius / 6
+        cornerBubble.frame = CGRect(x: tinyBubbleRadius - offset,
+                                    y: bounds.height - (1.5 * cornerBubbleRadius) + offset,
+                                    width: cornerBubbleRadius,
+                                    height: cornerBubbleRadius)
+        
+        let msgFrame = CGRect(x: tinyBubbleRadius + offset,
+                              y: 0,
+                              width: bounds.width - (tinyBubbleRadius + offset) - extraRightInset,
+                              height: bounds.height - (tinyBubbleRadius + offset))
+        let msgFrameCornerRadius = msgFrame.height / 2
+        
+        messageContainerView.frame = msgFrame
+        messageContainerView.layer.cornerRadius = msgFrameCornerRadius
+        
+        
+        let insets = UIEdgeInsets(top: offset, left: msgFrameCornerRadius / 1.5, bottom: offset, right: msgFrameCornerRadius / 1.5)
+        typingIndicator.frame = CGRect(x: insets.left,
+                                       y: insets.top,
+                                       width: msgFrame.width - insets.left - insets.right,
+                                       height: msgFrame.height - insets.top - insets.bottom)
+    }
+    
+    // MARK: - Animation Layers
+    
+    open func pulseAnimationLayer() -> CABasicAnimation {
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        animation.fromValue = 1
+        animation.toValue = 1.05
+        animation.duration = 1
+        animation.repeatCount = .infinity
+        animation.autoreverses = true
+        return animation
+    }
+    
+    // MARK: - Animation API
+    
+    open func startAnimating() {
+        defer { isAnimating = true }
+        guard !isAnimating else { return }
+        typingIndicator.startAnimating()
+        layer.add(pulseAnimationLayer(), forKey: AnimationKeys.pulse)
+    }
+    
+    open func stopAnimating() {
+        defer { isAnimating = false }
+        guard isAnimating else { return }
+        typingIndicator.stopAnimating()
+        layer.removeAnimation(forKey: AnimationKeys.pulse)
     }
     
 }

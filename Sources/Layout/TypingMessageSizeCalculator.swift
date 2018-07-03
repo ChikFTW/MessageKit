@@ -26,12 +26,8 @@ import Foundation
 
 open class TypingMessageSizeCalculator: MessageSizeCalculator {
     
-    open override func messageContainerSize(for message: MessageType) -> CGSize {
-        switch message.kind {
-        case .typing:
-            return CGSize(width: 100, height: 36)
-        default:
-            fatalError("messageContainerSize received unhandled MessageDataType: \(message.kind)")
-        }
+    open override func sizeForItem(at indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 100, height: 50)
     }
+    
 }

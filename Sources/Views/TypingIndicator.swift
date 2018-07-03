@@ -28,133 +28,116 @@ open class TypingIndicator: UIView {
     
     // MARK: - Properties
     
-    /// The number of dots rendered in the typing indicator. The `DEFAULT` value is 3
-    open var numberOfDots: Int = 3 {
-        didSet {
-            let wasAnimating = isAnimating
-            stopAnimating()
-            generateDots()
-            layoutSubviews()
-            if wasAnimating {
-                startAnimating()
-            }
-        }
-    }
-    
-    /// The distance between each dot, determied by the views frame and the number of dotes
-    open var spacing: CGFloat {
-        let fillWidth = bounds.width - (CGFloat(numberOfDots) * dotSize)
-        return fillWidth / CGFloat(numberOfDots - 1)
-    }
-    
-    /// The offset distance that the dot will animate towards
     open var bounceOffset: CGFloat = 7.5 { didSet { layoutSubviews() } }
     
-    /// The duration of each bounce animation
-    open var bounceDuration: TimeInterval = 0.35 {
-        didSet {
-            guard isAnimating else { return }
-            stopAnimating()
-            startAnimating()
-        }
-    }
-    
-    /// The height/width that each dot will be rendered with, determined by the
-    /// height of the view and the bounce offset
-    open var dotSize: CGFloat {
-        return bounds.height - bounceOffset
-    }
-    
-    /// The color of each dot
-    open var dotColor: UIColor = .white {
+    open var dotColor: UIColor = UIColor.lightGray {
         didSet {
             dots.forEach { $0.backgroundColor = dotColor }
         }
     }
     
-    /// A boolean value indicating if the dots are animating
+    open var isBounceEnabled: Bool = false
+    
+    open var isFadeEnabled: Bool = true
+    
     public private(set) var isAnimating: Bool = false
     
-    /// A reference to the `Circle` views
-    private var dots: [Circle] = []
+    private struct AnimationKeys {
+        static let bounce = "typingIndicator.bounce"
+        static let opacity = "typingIndicator.opacity"
+    }
     
-    /// The animation layer key for bouncing
-    private let bounceAnimationKey = "bounce"
+    // MARK: - Subviews
+    
+    public let leftDot = Circle()
+    
+    public let middleDot = Circle()
+    
+    public let rightDot = Circle()
+    
+    public let stackView = UIStackView()
+    
+    public var dots: [Circle] {
+        return [leftDot, middleDot, rightDot]
+    }
     
     // MARK: - Initialization
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        if frame.width == 0 || frame.height == 0 {
-            let defaultSpacing = 5
-            let defaultDotWidth = 30
-            let defaultWidth = CGFloat(numberOfDots * defaultDotWidth) + CGFloat((numberOfDots - 1) * defaultSpacing)
-            self.frame = CGRect(x: 0, y: 0, width: defaultWidth, height: CGFloat(defaultDotWidth) + bounceOffset)
-        }
-        generateDots()
+        setupView()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        setupView()
     }
     
-    /// Removes existing dotes from the view and generates new ones
-    private func generateDots() {
-        if !dots.isEmpty {
-            dots.forEach { $0.removeFromSuperview() }
-            dots.removeAll()
+    private func setupView() {
+        dots.forEach {
+            $0.backgroundColor = dotColor
+            $0.heightAnchor.constraint(equalTo: $0.widthAnchor).isActive = true
+            stackView.addArrangedSubview($0)
         }
-        for _ in 0..<numberOfDots {
-            let dot = Circle(radius: dotSize)
-            dot.backgroundColor = dotColor
-            addSubview(dot)
-            dots.append(dot)
-        }
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fillEqually
+        stackView.spacing = 5
+        addSubview(stackView)
     }
+    
+    // MARK: - Layout
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        var xOffset: CGFloat = 0
-        for dot in dots {
-            dot.frame.origin.x = xOffset
-            xOffset += dotSize + spacing
-        }
+        stackView.frame = bounds
     }
     
-    // MARK: - Animation
+    // MARK: - Animation Layers
     
-    /// The animation layer added to each dot
-    ///
-    /// - Returns: CABasicAnimation
     open func bounceAnimationLayer() -> CABasicAnimation {
-        let anim = CABasicAnimation(keyPath: "position.y")
-        anim.byValue = bounceOffset
-        anim.duration = bounceDuration
-        anim.repeatCount = .infinity
-        anim.autoreverses = true
-        return anim
+        let animation = CABasicAnimation(keyPath: "position.y")
+        animation.byValue = -bounceOffset
+        animation.duration = 0.5
+        animation.repeatCount = .infinity
+        animation.autoreverses = true
+        return animation
     }
     
-    /// Starts the animation of each dot
+    open func opacityAnimationLayer() -> CABasicAnimation {
+        let animation = CABasicAnimation(keyPath: "opacity")
+        animation.fromValue = 1
+        animation.toValue = 0.5
+        animation.duration = 0.5
+        animation.repeatCount = .infinity
+        animation.autoreverses = true
+        return animation
+    }
+    
+    // MARK: - Animation API
+    
     open func startAnimating() {
         defer { isAnimating = true }
         guard !isAnimating else { return }
-        var del: TimeInterval = 0
+        var delay: TimeInterval = 0
         for dot in dots {
-            let layer = bounceAnimationLayer()
-            let key = bounceAnimationKey
-            DispatchQueue.main.asyncAfter(deadline: .now() + del) {
-                dot.layer.add(layer, forKey: key)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let this = self else { return }
+                if this.isBounceEnabled {
+                    dot.layer.add(this.bounceAnimationLayer(), forKey: AnimationKeys.bounce)
+                }
+                if this.isFadeEnabled {
+                    dot.layer.add(this.opacityAnimationLayer(), forKey: AnimationKeys.opacity)
+                }
             }
-            del += bounceDuration / Double(numberOfDots - 1)
+            delay += 0.33
         }
     }
     
-    /// Ends the animation of each dot
     open func stopAnimating() {
         defer { isAnimating = false }
         guard isAnimating else { return }
-        dots.forEach { $0.layer.removeAnimation(forKey: bounceAnimationKey) }
+        dots.forEach { $0.layer.removeAnimation(forKey: AnimationKeys.bounce) }
     }
     
 }
